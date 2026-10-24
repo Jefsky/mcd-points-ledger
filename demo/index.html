@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>麦麦积分资产管家 · 离线演示</title>
+<style>
+  :root{
+    --bg:#0e0f12; --card:#17181d; --line:#282a31; --txt:#f2f3f5; --sub:#9a9da6;
+    --gold:#ffbc6b; --green:#5ee08a; --red:#ff8b8b; --blue:#7cc4ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.65}
+  .wrap{max-width:960px;margin:0 auto;padding:40px 24px 72px}
+  header{text-align:center;margin-bottom:34px}
+  h1{font-size:26px;font-weight:500;margin:0 0 10px}
+  .lead{font-size:14px;color:var(--sub);max-width:620px;margin:0 auto}
+  .badge{display:inline-block;font-size:12px;color:var(--gold);border:1px solid #3a3327;background:#201c15;padding:3px 11px;border-radius:999px;margin-bottom:16px}
+  .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:26px 0 22px}
+  .tab{font-size:13px;padding:8px 16px;border-radius:9px;border:1px solid var(--line);background:#141519;color:var(--sub);cursor:pointer;transition:.15s}
+  .tab:hover{border-color:#3a3d46;color:var(--txt)}
+  .tab.on{background:#24262d;color:var(--txt);border-color:#4a4d57}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:18px;display:none}
+  .card.on{display:block}
+  h2{font-size:16px;font-weight:500;margin:0 0 4px}
+  .hint{font-size:12.5px;color:var(--sub);margin:0 0 16px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid #22242a}
+  th{color:var(--sub);font-weight:500;font-size:12px}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  .star{color:var(--gold)}
+  .bar{height:6px;border-radius:3px;background:#25272e;overflow:hidden;min-width:80px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#ffbc6b,#ff9f43);border-radius:3px}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .kpi div{flex:1;min-width:150px;background:#141519;border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .kpi b{display:block;font-size:22px;font-weight:500;letter-spacing:-.4px}
+  .kpi span{font-size:12px;color:var(--sub)}
+  .callout{background:#1a1c22;border-left:3px solid var(--gold);border-radius:0 9px 9px 0;padding:13px 16px;font-size:13px;margin:16px 0}
+  .ok{color:var(--green)} .warn{color:var(--gold)} .bad{color:var(--red)}
+  .list{list-style:none;padding:0;margin:0;font-size:13px}
+  .list li{padding:8px 0;border-bottom:1px solid #22242a;display:flex;gap:10px;align-items:flex-start}
+  .list li:last-child{border-bottom:none}
+  .tag{font-size:11px;padding:2px 8px;border-radius:5px;background:#2a2320;color:var(--gold);flex-shrink:0;margin-top:1px}
+  .tag.g{background:#1d2a22;color:var(--green)}
+  .tag.r{background:#2c1f21;color:var(--red)}
+  .tag.b{background:#1b2430;color:var(--blue)}
+  footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);text-align:center}
+  footer a{color:var(--gold)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#1e2026;padding:2px 6px;border-radius:4px;color:#d7d9de}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">离线演示 · 无需 MCP Token</span>
+    <h1>麦麦积分资产管家</h1>
+    <p class="lead">
+      把麦当劳积分当成一项需要经营的资产，而不是一个只会递减的数字。<br />
+      本页使用<strong>脱敏的历史快照</strong>演示四条工作流的输出效果，不实时查询、不下单、不消耗积分。
+    </p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-t="c1">① 积分体检</button>
+    <button class="tab" data-t="c2">② 抽奖雷达</button>
+    <button class="tab" data-t="c3">③ 商城导购</button>
+    <button class="tab" data-t="c4">④ 订单复盘</button>
+  </div>
+
+  <!-- 1 -->
+  <section class="card on" id="c1">
+    <h2>积分体检 · 你当前有 12,480 积分</h2>
+    <p class="hint">数据来源：<code>query-my-account</code> + <code>mall-points-products</code> + <code>mall-product-detail</code>（脱敏快照）</p>
+    <table>
+      <thead><tr><th>可兑换商品</th><th>所需积分</th><th>折算 1 分 ≈</th><th style="width:180px">性价比</th></tr></thead>
+      <tbody>
+        <tr><td>麦辣鸡腿堡兑换券</td><td class="n">8,000</td><td class="n">0.45 元</td>
+            <td><div class="bar"><i style="width:95%"></i></div><span class="star">★★★★★</span></td></tr>
+        <tr><td>薯条（中份）</td><td class="n">2,500</td><td class="n">0.52 元</td>
+            <td><div class="bar"><i style="width:84%"></i></div><span class="star">★★★★☆</span></td></tr>
+        <tr><td>麦满分早餐</td><td class="n">1,800</td><td class="n">0.58 元</td>
+            <td><div class="bar"><i style="width:74%"></i></div><span class="star">★★★☆☆</span></td></tr>
+        <tr><td>中可乐</td><td class="n">600</td><td class="n">0.61 元</td>
+            <td><div class="bar"><i style="width:70%"></i></div><span class="star">★★★☆☆</span></td></tr>
+        <tr><td>麦麦商城定制帆布袋</td><td class="n">9,600</td><td class="n">0.22 元</td>
+            <td><div class="bar"><i style="width:40%"></i></div><span class="star">★★☆☆☆</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>建议：</strong>优先兑换「麦辣鸡腿堡兑换券」（8,000 分，折算比最高 0.45 元/分），
+      剩余 <strong>4,480 分</strong>可留给「薯条（中份）」+「中可乐」（合计 3,100 分），或留作下次抽奖门槛。<br />
+      <span class="warn">提示：</span>「麦麦商城定制帆布袋」折算比仅 0.22 元/分，是本轮最不划算的一项，<strong>不建议</strong>为它清空积分。
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="card" id="c2">
+    <h2>抽奖雷达 · 当前活动评估</h2>
+    <p class="hint">数据来源：<code>now-time-info</code> + <code>query-lottery-info</code> + <code>query-my-prizes</code></p>
+    <div class="kpi">
+      <div><b class="warn">进行中</b><span>活动窗口 10/22 – 10/28</span></div>
+      <div><b>2,000</b><span>单次抽奖所需积分</span></div>
+      <div><b>12,480</b><span>当前可用积分（可抽 6 次）</span></div>
+      <div><b class="ok">+1,200</b><span>折算期望值（估算）</span></div>
+    </div>
+    <table>
+      <thead><tr><th>奖品</th><th>数量</th><th>单次概率</th><th>折算价值</th></tr></thead>
+      <tbody>
+        <tr><td>20 元餐品券</td><td class="n">300</td><td class="n">36%</td><td class="n">20.00 元</td></tr>
+        <tr><td>5 元餐品券</td><td class="n">600</td><td class="n">48%</td><td class="n">5.00 元</td></tr>
+        <tr><td>麦辣鸡腿堡兑换券</td><td class="n">100</td><td class="n">16%</td><td class="n">21.50 元</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>建议：参与。</strong>单次成本 2,000 分（按 0.45 元/分折算 ≈ 900 元积分价值），
+      期望收益 <strong>1,200 元</strong>，<span class="ok">期望值高于成本</span>，建议参与 3–4 次，保留 6,000 分用于兑换。<br />
+      <span class="warn">注：</span>概率与奖品池为<strong>估算值</strong>，实际以 <code>query-lottery-info</code> 实时返回为准。
+      你的历史中奖记录：4 次抽奖中中过 1 张 20 元券，命中率 25%，与期望接近。
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="card" id="c3">
+    <h2>商城导购 · 送人体面的积分兑换方案</h2>
+    <p class="hint">数据来源：<code>mall-points-products</code> + <code>mall-product-detail</code> + <code>query-my-account</code></p>
+    <ul class="list">
+      <li><span class="tag g">推荐</span><div><strong>麦辣鸡腿堡兑换券 ×2</strong> — 需 16,000 分，余额不足。<br>
+        <span class="bad">当前余额 12,480 分，缺口 3,520 分</span>，建议再攒 2–3 天后兑换。</div></li>
+      <li><span class="tag b">可立即兑换</span><div><strong>麦满分早餐 ×1 + 薯条（中份）×1 + 中可乐 ×1</strong> — 需 4,900 分<br>
+        兑换后余额 <strong>7,580 分</strong>，折算价值约 26.4 元。</div></li>
+      <li><span class="tag">备选</span><div><strong>麦麦商城定制帆布袋</strong> — 需 9,600 分<br>
+        兑换后余额 2,880 分，但折算比仅 0.22 元/分，<span class="warn">性价比偏低</span>，除非确实需要这个实物。</div></li>
+    </ul>
+    <div class="callout">
+      <strong>我的建议：</strong>选方案 2。方案 1 虽更体面，但需要再攒积分且会清空余额；
+      方案 3 的折算比明显偏低，不建议为凑单而兑换。
+      <br /><span class="warn">下单前会再次复述商品、所需积分与兑换后余额，确认后才执行</span>——
+      积分不可逆，所以这一步需要你明确点头。
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="card" id="c4">
+    <h2>订单复盘 · 最近 12 单（合计 ¥287.40）</h2>
+    <p class="hint">数据来源：<code>order-list</code> + <code>query-order</code> + <code>query-my-coupons</code></p>
+    <ul class="list">
+      <li><span class="tag r">漏用券</span><div><strong>10/12 订单漏用了「免配送费券」</strong><br>
+        当时你持有 2 张未使用的外送免配送费券，该单本可再省 <strong>¥12.00</strong>。</div></li>
+      <li><span class="tag r">重复下单</span><div><strong>10/18 与 10/19 各下一份麦辣鸡腿堡</strong>（¥21.50 × 2）<br>
+        若合并为麦辣鸡腿堡套餐，可省约 <strong>¥8.00</strong>。</div></li>
+      <li><span class="tag r">积分未用</span><div><strong>12 单中有 6 单未使用积分抵扣</strong><br>
+        当时余额足够抵 <strong>¥34.60</strong>，相当于白扔 34,600 积分。</div></li>
+    </ul>
+    <div class="callout">
+      <strong>可改进空间：约 ¥54.60 / 月（约 19%）</strong><br />
+      其中 <span class="ok">漏用券占 46%</span>——这说明问题不在"点得贵"，而在"没把券叠上"。
+      下次点餐前，我会主动提醒你当前有哪些可叠加的券。
+    </div>
+  </section>
+
+  <footer>
+    本页为<strong>离线演示</strong>，使用脱敏历史快照，不实时查询、不下单、不消耗积分。<br />
+    接入你自己的麦当劳 MCP Token 后，Skill 会输出上述同结构的<strong>真实数据</strong>版本。<br /><br />
+    <a href="https://github.com/Jefsky/mcd-points-steward">项目仓库</a> ·
+    <a href="https://github.com/M-China/mcd-developer-innovation-challenge">参赛活动</a> ·
+    <a href="https://github.com/M-China/mcd-mcp-server">麦当劳 MCP 工具文档</a><br /><br />
+    麦当劳程序员节创意开发大赛参赛作品 · 非麦当劳官方产品 · 所有价格与积分以麦当劳官方渠道实时结果为准
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('on'); });
+      document.querySelectorAll('.card').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      document.getElementById(b.dataset.t).classList.add('on');
+    });
+  });
+</script>
+</body>
+</html>

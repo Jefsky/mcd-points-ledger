@@ -6,9 +6,24 @@
 
 基于麦当劳中国官方 MCP Server 的积分资产运营 Skill
 
-[安装](#安装) · [四条工作流](#四条工作流) · [MCP 工具](#使用的-mcp-工具) · [参赛信息](#参赛信息)
+[先看效果](#先看效果) · [四条工作流](#四条工作流) · [MCP 工具](#使用的-mcp-工具) · [安装](#安装) · [参赛信息](#参赛信息)
 
 </div>
+
+---
+
+## 先看效果
+
+**不用装、不用 Token、浏览器直接打开就能看到完整成品。**
+
+[![离线演示](https://img.shields.io/badge/离线演示-无需%20Token-brightgreen)](./demo/index.html)
+[![MCP 官方数据](https://img.shields.io/badge/MCP-官方%20Server-blue)](https://github.com/M-China/mcd-mcp-server)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)] [![MIT](https://img.shields.io/badge/license-MIT-green)]
+
+> **[→ 打开离线演示页](./demo/index.html)** — 四个 Tab 覆盖积分体检、抽奖雷达、商城导购、订单复盘
+> 使用脱敏历史快照，不实时查询、不下单、不消耗积分。
+
+评审同学如果不想申请 Token，点上面那个链接就能看到 Skill 的完整输出效果。
 
 ---
 
@@ -160,6 +175,8 @@ mcd-points-steward/
 ├── mcp-config.example.json          # MCP 配置示例（环境变量占位符）
 ├── mcp-config.workbuddy.example.json
 ├── workbuddy.md                     # WorkBuddy 开发对话上下文
+├── demo/
+│   └── index.html                   # 离线演示页（免 Token，浏览器直接打开）
 └── skills/
     └── mcd-points-steward/
         └── SKILL.md                 # Skill 定义
