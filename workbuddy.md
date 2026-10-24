@@ -4,7 +4,7 @@
 
 **参与方**：本项目由参赛者在腾讯 WorkBuddy 智能体中完成开发。WorkBuddy 承担了以下工作：活动规则逆向分析、赛道机会识别、Skill 设计与文档撰写、代码仓库初始化与发布。
 
-**未执行的验证一律写明未验证。** 本次开发中麦当劳 MCP Token 未能完成申请（见文末「未验证项」），因此涉及真实 MCP 调用的部分均如实标注为未验证。
+**未执行的验证一律写明未验证。** 第五轮已实际打通麦当劳 MCP 并完成真实工具调用（详见「第五轮」），仅**有副作用的写操作**（真实扣积分的下单与抽奖）出于谨慎未执行，已在文末如实列出。
 
 ---
 
@@ -182,28 +182,118 @@ skills/
 
 ---
 
-## 未验证项（如实说明）
+## 第五轮：打通 MCP 并用真实数据验证
 
-以下内容在本次开发中**未能实际执行**，如实列出：
+### 背景
 
-| 项目 | 状态 | 原因 |
-|------|------|------|
-| 麦当劳 MCP Token 申请 | **未完成** | 需在 `open.mcd.cn/mcp` 用手机号验证登录并同意服务协议。开发环境内浏览器标签页无法稳定保持会话（页面加载成功后 `eval` 落到 `about:blank`），自动化操作无法可靠完成该流程，需人工在浏览器中完成。 |
-| 12 个 MCP 工具的真实调用 | **未验证** | 依赖上述 Token。工具名、参数、返回结构均依据官方 [M-China/mcd-mcp-server](https://github.com/M-China/mcd-mcp-server) 的工具列表逐条核对，包括：`query-my-account`（我的积分查询，含可用/累计/冻结/即将过期积分）、`mall-points-products`、`mall-product-detail`、`mall-create-order`（积分兑换下单）、`mall-order-list`、`query-lottery-info`（含活动状态、奖品列表、抽奖消耗规则）、`draw-lottery`、`query-my-prizes`、`order-list`（到店/外送历史订单，非商城订单）、`query-order`、`query-my-coupons`、`now-time-info`。工具名与官方文档完全一致，但**尚未发起过真实调用**，故返回字段的实际结构未经验证。 |
-| 抽奖活动的"期望值"估算 | **未验证** | 活动奖品池的真实概率分布需调用 `query-lottery-info` 后才能计算，当前仅为设计层面的估算逻辑 |
-| 商城商品的"折算价值" | **未验证** | 需 `mall-product-detail` 返回中包含可用于折算的字段（如原价/有效期），该字段构成尚未通过真实调用确认 |
+第四轮完成时，项目的 MCP 相关内容全部基于官方 README 推断，`workbuddy.md` 中如实标注为"未验证"。规则明确要求「参赛项目须真实使用麦当劳 MCP 能力」，因此必须拿到 Token 并实际调用。
+
+### MCP 平台登录机制（逆向结果）
+
+`open.mcd.cn/mcp` 的登录不是手机号验证码，而是**微信扫码登录**。逆向 `chunk_index.3b0c29e.0343dbe9.chunk.js` 得到完整机制：
+
+```js
+// 状态枚举
+oe = { WAIT_SCAN:1, SCANNED:2, CONFIRMED:3, REJECTED:4 }
+
+// 二维码内容即当前页 URL
+const a = e || window.location.href;  // <QRCode value={a} .../>
+
+// 确认后写入 sessionStorage
+case oe.CONFIRMED:
+  r.sid ? (sessionStorage.setItem("sid", r.sid),
+           r.meddyId && sessionStorage.setItem("meddyId", r.meddyId),
+           e.replace("/mcp"))
+       : t(ie.EXPIRED);
+```
+
+三个关键发现，决定了最终方案：
+
+1. **登录态存在 `sessionStorage`**，不是 cookie——此前注入 cookie 无效由此而来。
+2. **二维码内容是 `window.location.href`**，即登录页 URL；而真正需要微信打开的是 `qrcodeId` 拼出的 CDN 页 `https://cdn.mcd.cn/cms/pages/mcp-login.html?redirectKey=qrcodeLogin&qrcodeId=...`。
+3. **状态机是 4 态**（WAIT_SCAN/SCANNED/CONFIRMED/REJECTED），此前只观察到 `status=1`，是因为二维码已失效。
+
+### 调试过程中的两次弯路（保留记录）
+
+**第一次**：用 `agent-browser` 反复 `reload` 页面来"保持二维码新鲜"。实际效果相反——每次 reload 都调用 `POST /passport/login/qrcode` 生成**新的 qrcodeId**，用户扫的那张码随即作废。表现为扫码后"网页没反应"。
+
+**第二次**：改为用 Playwright 直连（`agent-browser` 的标签页在多次 CLI 调用间会重置为 `about:blank`），但仍截取 DOM 里的 `.url-qrcode svg` 作为二维码。该 SVG 的内容是登录页 URL，微信扫后会再打开一个登录页而非确认页——**用户需要扫两次**才能走到确认环节。
+
+**最终方案**：用 `qrcode` 库对 CDN `href` 自行生成二维码（内容正确、且 `qrcodeId` 稳定不失效），同时不 reload 页面、只监控 poll。修改后一次扫码即通过。
+
+### 激活 Token
+
+登录后 `sid` 写入 `sessionStorage`，进入控制台时接口为 `GET /member/user/api-key/query`（返回 `data:null`，即尚未激活），点击「激活」并同意服务协议后：
+
+```
+POST /member/user/api-key/create
+{"success":true,"code":200,"data":{"key":"fwTb********4LYW","expireDate":null}}
+```
+
+> 完整 Token 已在本地即时写入 WorkBuddy 的 MCP 配置使用，**不落盘到本仓库**（符合参赛声明「不包含真实 Token、密钥、密码、账号凭证」的要求）。此处按脱敏形式记录，仅用于说明接口返回结构。
+
+### 真实调用验证
+
+```json
+{"jsonrpc":"2.0","id":1,"result":{
+  "capabilities":{"tools":{}},
+  "protocolVersion":"2024-11-05",
+  "serverInfo":{"name":"mcd-mcp","version":"1.0.0"}
+}}
+```
+
+`tools/list` 返回 **35 个工具**（官方 README 记为 33 个，服务端已新增 `query-promotions`、`query-survey-coupon`、`query-party-store-session`）。本项目依赖的 12 个工具**全部存在**。
+
+实际调用结果：
+
+| 工具 | 关键返回 |
+|------|----------|
+| `query-my-account` | `availablePoint=1249`、`accumulativePoint=7495.6`、`usedPoint=4169`、`expiredPoint=2077.6`、`frozenPoint=0` |
+| `now-time-info` | `2026-10-24T17:19:11`、`GMT+08:00` |
+| `mall-points-products` | **50** 件在架商品，含 `point` / `status` / `selling` / `upTime` / `downTime` |
+| `query-lottery-info` | 「周六麦金喜抽奖」进行中、`drawPoint=24`、`drawDecision.resourceEligible=true`、奖品池含积分奖 |
+| `query-my-coupons` | 卡包优惠券（如「19.9 元王牌炸鸡任选 2」） |
+| `order-list` | **10** 笔历史订单，跨 5 家门店，含 `realTotalAmount` / `orderProductList` |
+| `mall-order-list` | 积分商城订单记录 |
+
+### 真实数据推翻的三个设计假设
+
+这一轮最有价值的产出不是"能调通"，而是**真实数据推翻了我原本的设计**：
+
+**1. `point=0` 不等于免费。** 我原以为 `mall-points-products` 返回的 `point` 就是兑换价，直接换算即可。实测发现 50 件商品中大量 `point=0` 的条目（品鉴会、生日派对、读书会），其 `price=0` 表示**非积分结算项**——是需另付现金的活动权益。若照原设计换算，会得出"你有 1,249 分可以随便换"这种荒谬结论。已在 SKILL.md 中明确禁止此解读。
+
+**2. 余额不足时，正确答案是「别换」。** 我原设计"商城导购"流程是"给出 2–3 个可兑换方案"。实测用户只有 1,249 分，而真实积分商品门槛在数千至数万级（Nike Book 2 联名款 8,888 分）——**一件都换不到**。原设计在此会强行推荐买不起的商品。已改为：如实说明缺口 → 给出替代出口（24 分/次的抽奖）→ 估算攒分周期。
+
+**3. 复盘的价值不在"你点贵了"。** 实测 10 笔订单单价全部正常，但账户累计积分中 **27.7% 已过期**，且卡包有未核销券。真正的漏点是"积分与券的静默过期"，金额比凑单差价更大。已把这一认知写进 SKILL.md 的复盘工作流。
+
+### 同步更新的文件
+
+| 文件 | 变更 |
+|------|------|
+| `skills/mcd-points-steward/SKILL.md` | 三个工作流改用真实字段（`expiredPoint` / `drawDecision` / `orderStatus` 等）；新增"余额不足应建议别换"分支；补充 `point=0` 陷阱警示 |
+| `MCP_INTEGRATION.md` | 工具表换成 `tools/list` 实际返回的官方描述与入参；新增「实测验证记录」章节 |
+| `demo/index.html` | 从假想数据（12,480 分）改为**真实抓取数据**（1,249 分、50 件商品、10 笔订单、"周六麦金喜抽奖"） |
+| `README.md` | 首屏改为引导"先看效果"，示例数据改为真实值 |
 
 ---
 
-## 关于 MCP 接入的最后一步
+## 仍存在的限制（如实说明）
 
-MCP Token 是本项目"真实使用麦当劳 MCP"的唯一前置条件。完整人工步骤如下（约 2 分钟）：
+| 项目 | 状态 | 说明 |
+|------|------|------|
+| `mall-create-order` / `draw-lottery` 的写操作 | **未执行** | 这两个是**有副作用**的操作（真实扣积分、真实下单、真实抽奖）。开发阶段未执行，避免在用户不知情时消耗其积分或触发订单。Skill 本身已内置"下单前强制二次确认"约束。 |
+| 奖品概率分布 | **部分验证** | `query-lottery-info` 返回了奖品列表与消耗规则，但**未返回各奖品的中奖概率**字段。因此期望值只能定性估算，不能给出精确数字。 |
+| 商品"折算价值" | **部分验证** | `mall-product-detail` 返回 SKU 与有效期，但需逐商品拉取（50 件）才能建立完整折算表。演示页中的折算比为基于真实商品的示意值，未逐一计算。 |
 
-1. 打开 <https://open.mcd.cn/mcp>
-2. 右上角【登录】→ 手机号验证码登录
-3. 登录后右上角变为【控制台】→ 点击【激活】申请 MCP Token
-4. 阅读并同意服务协议 → 复制 Token
-5. 在 WorkBuddy 中：左侧【专家·技能·连接器】→【连接器】→ 右上角【自定义连接器】→【配置MCP】，填入：
+---
+
+## 关于 MCP 接入（供使用者参考）
+
+Token 申请与接入步骤：
+
+1. 打开 <https://open.mcd.cn/mcp> → 右上角【登录】→ **微信扫码**确认
+2. 进入【控制台】→【激活】→ 同意服务协议 → 复制 Token
+3. 在 WorkBuddy 中：左侧【专家·技能·连接器】→【连接器】→ 右上角【自定义连接器】→【配置MCP】，填入：
 
 ```json
 {
@@ -217,9 +307,9 @@ MCP Token 是本项目"真实使用麦当劳 MCP"的唯一前置条件。完整�
 }
 ```
 
-6. 保存 → 启用 `mcd-mcp` → 启用本目录下的 `skills/mcd-points-steward/`
+4. 保存 → 启用 `mcd-mcp` → 启用本目录下的 `skills/mcd-points-steward/`
 
-Token 拿到后，即可运行四条工作流并补齐上表中的未验证项。
+限流：每个 Token 每分钟最多 600 次请求。本 Skill 单次工作流通常在 10 次以内。
 
 ---
 
