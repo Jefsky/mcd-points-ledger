@@ -1,0 +1,10 @@
+# 本地环境与凭证
+.env
+.env.*
+*.local
+mcp-config.json
+mcp-config.workbuddy.json
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
