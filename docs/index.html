@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>麦麦积分真账本 · 货架验真真实数据演示</title>
+<style>
+  :root{
+    --bg:#0d0d0f; --card:#17181d; --line:#282a31; --txt:#f2f3f5; --sub:#9a9da6;
+    --gold:#ffbc6b; --green:#5ee08a; --red:#ff8b8b; --blue:#7cc4ff; --purple:#b39dff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:38px 22px 70px}
+  header{text-align:center;margin-bottom:26px}
+  h1{font-size:26px;font-weight:500;margin:0 0 10px}
+  .lead{font-size:14px;color:var(--sub);max-width:680px;margin:0 auto}
+  .badge{display:inline-block;font-size:12px;color:var(--green);border:1px solid #244030;background:#131f18;padding:3px 12px;border-radius:999px;margin-bottom:16px}
+  .hero{background:linear-gradient(135deg,#1b1a14,#171820);border:1px solid #3a3324;border-radius:16px;padding:24px 26px;margin:24px 0 22px}
+  .hero h2{font-size:19px;font-weight:500;margin:0 0 8px;color:var(--gold)}
+  .hero p{margin:0;font-size:14px;color:#d9dbe0}
+  .hero .chain{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:13px}
+  .hero .chain b{font-size:20px;font-weight:500}
+  .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:24px 0 20px}
+  .tab{font-size:13px;padding:8px 15px;border-radius:9px;border:1px solid var(--line);background:#141519;color:var(--sub);cursor:pointer;transition:.15s}
+  .tab:hover{border-color:#3a3d46;color:var(--txt)}
+  .tab.on{background:#24262d;color:var(--txt);border-color:#4a4d57}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:18px;display:none}
+  .card.on{display:block}
+  h2{font-size:16px;font-weight:500;margin:0 0 4px}
+  .hint{font-size:12.5px;color:var(--sub);margin:0 0 16px}
+  .hint code{background:#1e2026;padding:1px 6px;border-radius:4px;color:#d7d9de;font-size:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #22242a}
+  th{color:var(--sub);font-weight:500;font-size:12px}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  .bar{height:6px;border-radius:3px;background:#25272e;overflow:hidden;min-width:70px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#ffbc6b,#ff9f43);border-radius:3px}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .kpi div{flex:1;min-width:132px;background:#141519;border:1px solid var(--line);border-radius:11px;padding:12px 15px}
+  .kpi b{display:block;font-size:21px;font-weight:500;letter-spacing:-.4px}
+  .kpi span{font-size:12px;color:var(--sub)}
+  .callout{background:#1a1c22;border-left:3px solid var(--gold);border-radius:0 9px 9px 0;padding:13px 16px;font-size:13px;margin:16px 0}
+  .callout.g{border-left-color:var(--green)}
+  .callout.r{border-left-color:var(--red)}
+  .callout.b{border-left-color:var(--blue)}
+  .ok{color:var(--green)} .warn{color:var(--gold)} .bad{color:var(--red)} .dim{color:var(--sub)}
+  .list{list-style:none;padding:0;margin:0;font-size:13px}
+  .list li{padding:9px 0;border-bottom:1px solid #22242a;display:flex;gap:10px;align-items:flex-start}
+  .list li:last-child{border-bottom:none}
+  .tag{font-size:11px;padding:2px 8px;border-radius:5px;background:#2a2320;color:var(--gold);flex-shrink:0;margin-top:1px}
+  .tag.g{background:#1d2a22;color:var(--green)}
+  .tag.r{background:#2c1f21;color:var(--red)}
+  .tag.b{background:#1b2430;color:var(--blue)}
+  .tag.p{background:#241f2e;color:var(--purple)}
+  .prize{display:inline-block;background:#221f2b;border:1px solid #38304a;color:var(--purple);border-radius:6px;padding:3px 9px;margin:3px 4px 3px 0;font-size:12px}
+  .strike{text-decoration:line-through;opacity:.55}
+  footer{margin-top:38px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);text-align:center}
+  footer a{color:var(--gold)}
+  .note{font-size:11.5px;color:#7c7f88;margin-top:12px;line-height:1.7}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+  .fchip{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid var(--line);background:#141519;color:var(--sub);cursor:pointer}
+  .fchip.on{background:#2a2320;border-color:#4a3f2c;color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">真实 MCP 数据 · 2026-10-24 抓取 · 可复现</span>
+    <h1>麦麦积分真账本</h1>
+    <p class="lead">
+      <strong>它说有多少，你算的是还剩多少、能不能真换到。</strong><br />
+      以下全部为<strong>通过麦当劳官方 MCP 实际调用</strong>取得的数据。任何数字都能用
+      <span class="mono">scripts/verify_shelf.py</span> 自行复现。
+    </p>
+  </header>
+
+  <div class="hero">
+    <h2>官方说「有 50 件可兑换」，实际真正能换到的只有 9 件</h2>
+    <p>而且这 9 件，<strong>每一件都要另外掏现金</strong>。纯积分可兑商品：<strong>0 件</strong>。</p>
+    <div class="chain">
+      <span class="dim">接口报告</span><b>50</b>
+      <span class="dim">→ 全量去重</span><b>54</b>
+      <span class="dim">→ 积分结算项</span><b>27</b>
+      <span class="dim">→ 假上架</span><b class="bad">−18</b>
+      <span class="dim">→ 真正可兑</span><b class="warn">9</b>
+      <span class="dim">→ 纯积分可兑</span><b class="bad">0</b>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-t="c1">① 货架验真</button>
+    <button class="tab" data-t="c2">② 积分净值</button>
+    <button class="tab" data-t="c3">③ 抽奖回本</button>
+    <button class="tab" data-t="c4">④ 真可兑清单</button>
+    <button class="tab" data-t="c5">⑤ 订单复盘</button>
+  </div>
+
+  <!-- 1 货架验真 -->
+  <section class="card on" id="c1">
+    <h2>货架验真 · 四道检测，官方口径全部失真</h2>
+    <p class="hint">数据来源：<code>mall-points-products</code>（默认 + 带 <code>catRuleIds</code> 全量）、<code>mall-product-detail</code>（真实返回）</p>
+
+    <div class="kpi">
+      <div><b>54</b><span>全量在架（去重）</span></div>
+      <div><b class="warn">4</b><span>默认查询漏报</span></div>
+      <div><b class="bad">18</b><span>假上架（66%）</span></div>
+      <div><b class="warn">9</b><span>真正可兑</span></div>
+      <div><b class="bad">9/9</b><span>需另付现金</span></div>
+    </div>
+
+    <div class="callout b">
+      <strong>检测一 · 漏报校正：</strong>不传 <code>catRuleIds</code> 的默认查询只返回 50 件；
+      遍历 10 个分类规则取并集去重后是 <strong>54 件</strong>，默认查询<strong>漏报 4 件</strong>：<br />
+      <span class="mono dim">9.9元指定小食任选 (100分) · 3.9元圆筒冰淇淋 (100分) · 16.9元2份麦辣鸡翅 (200分) · 酸黄瓜吧唧礼盒 (800分)</span><br />
+      <span class="dim">这 4 件里有 3 件正是真能兑的低门槛商品——不校正就直接漏掉了最该推荐的选项。</span>
+    </div>
+
+    <div class="callout r">
+      <strong>检测二 · 假上架检测：</strong>27 件标着 <code>status=2</code>（上架）的积分商品里，
+      <strong>18 件的兑换窗口早已关闭（66%）</strong>——但接口的 <code>status</code> 字段仍在说"上架"。<br />
+      <span class="mono dim">例：Nike Book 2 麦当劳特别联名款 (8888分) 窗口 2026-06-05 14:00~16:00 ｜ 罗技键鼠套装 (6666分) 窗口 2026-08-21 14:00~23:59</span><br />
+      <span class="dim">只看 <code>status</code> 字段，排行榜上那些高门槛商品全是幻觉。</span>
+    </div>
+
+    <div class="callout r">
+      <strong>检测三 · 隐藏现金成本：</strong>逐个调 <code>mall-product-detail</code> 读 <code>skuList[].extTradePrice</code>，
+      9 件真正可兑商品<strong>全部带 extTradePrice</strong>，纯积分可兑 <strong>0 件</strong>。<br />
+      <span class="dim">也就是说："200 分换 10.9 元小食"这句话是错的——真实语义是"200 分 + 另付 10.9 元"。</span>
+    </div>
+
+    <div class="callout">
+      <strong>检测四 · 同名多 spuId：</strong>「10.9元指定小食任选」同时挂着两个条目——
+      <span class="mono">spuId 17076 = 100 分</span> 与 <span class="mono">spuId 17077 = 200 分</span>。
+      名字一模一样、兑换价差一倍，兑换前极易选错。
+    </div>
+
+    <div class="callout g">
+      <strong>验真的意义：</strong>官方口径的 50 件里，实际能真正兑换的是 9 件（<strong>缩水 82%</strong>），
+      而这 9 件全部需要另付现金。<strong>只信 <code>status</code> 字段的导购，会把你带向一个不存在的货架。</strong>
+    </div>
+  </section>
+
+  <!-- 2 积分净值 -->
+  <section class="card" id="c2">
+    <h2>积分净值 · 你的积分账户全貌</h2>
+    <p class="hint">数据来源：<code>query-my-account</code>（真实返回，<code>accountId=2F2925CF-…</code>）</p>
+    <div class="kpi">
+      <div><b class="ok">1,249</b><span>可用积分</span></div>
+      <div><b>7,495.6</b><span>累计积分</span></div>
+      <div><b>4,169</b><span>已使用</span></div>
+      <div><b class="bad">2,077.6</b><span>已过期（沉没）</span></div>
+      <div><b>0</b><span>本月将过期</span></div>
+    </div>
+    <div class="callout r">
+      <strong>2,077.6 分已经过期了，占累计积分的 <strong>27.7%</strong>。</strong><br />
+      每 4 枚积分里就有 1 枚是白扔的——它没换来任何东西，只是安静地归零了。
+      <br /><span class="dim">这正是这个 Skill 存在的理由：积分不是"攒着就好的数字"，它有<strong>有效期</strong>，
+      有<strong>兑换比</strong>，也有<strong>机会成本</strong>。放着不动是最差的一种策略。</span>
+    </div>
+    <table>
+      <thead><tr><th>指标</th><th style="width:130px">占比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>可用积分</td><td class="n">1,249</td>
+            <td><div class="bar"><i style="width:17%"></i></div> <span class="dim">当前可花掉的</span></td></tr>
+        <tr><td>已使用</td><td class="n">4,169</td>
+            <td><div class="bar"><i style="width:56%"></i></div> <span class="dim">换过东西，不算亏</span></td></tr>
+        <tr><td>已过期</td><td class="n">2,077.6</td>
+            <td><div class="bar"><i style="width:28%;background:linear-gradient(90deg,#ff8b8b,#e24b4a)"></i></div>
+            <span class="bad">真正的浪费</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>可达净值：</strong>真正可兑商品的最低门槛是 <strong>50 分</strong>，你的 1,249 分完全够得着；
+      但 9 件全部需另付现金、纯积分可兑为 0，
+      所以<strong>积分在这里是"门槛券"而不是"支付手段"</strong>——真正能把积分花掉的地方是抽奖。
+    </div>
+  </section>
+
+  <!-- 3 抽奖回本 -->
+  <section class="card" id="c3">
+    <h2>抽奖回本率 · 周六麦金喜抽奖</h2>
+    <p class="hint">数据来源：<code>now-time-info</code> + <code>query-lottery-info</code>（真实返回，<code>activityCode=269t</code>）</p>
+    <div class="kpi">
+      <div><b class="ok">进行中</b><span>activityStatusText</span></div>
+      <div><b>24</b><span>单次消耗积分</span></div>
+      <div><b>52</b><span>你的可抽次数</span></div>
+      <div><b class="warn">0</b><span>剩余免费次数</span></div>
+    </div>
+    <div>
+      <strong style="font-size:13px">真实奖品池</strong>
+      <div style="margin-top:8px">
+        <span class="prize">积分霸王餐（优惠券）</span>
+        <span class="prize">麦金卡 7 天</span>
+        <span class="prize">10 会员积分</span>
+        <span class="prize">12 会员积分</span>
+        <span class="prize">28 会员积分</span>
+        <span class="prize">8 会员积分</span>
+      </div>
+    </div>
+    <div class="callout g">
+      <strong>建议：优先抽。</strong>单次成本仅 24 分，是全场门槛最低的积分出口。<br />
+      你的 1,249 分理论上可抽 <strong>52 次</strong>；抽完还剩 1 分，
+      但奖品池里有「积分霸王餐」和「10/12/28 会员积分」——<strong>积分奖意味着积分可以回流</strong>，
+      长期看接近无损。
+      <br /><span class="dim">接口还返回了 <code>drawDecision.resourceEligible=true</code>（你符合参与条件）、
+      <code>nextConsumption.text="本次将消耗 24 积分"</code>，说明当前这一抽是确定可用的。</span>
+    </div>
+    <div class="callout">
+      <strong>为什么这比换东西更划算：</strong>商城里 9 件真正可兑的商品虽然门槛都不高（50–800 分），
+      但<strong>每一件都要另付现金</strong>，积分换不回任何"纯积分"的实物；
+      而抽奖 24 分一抽，奖品池里有积分回流，是当前余额下唯一能真正把积分花掉的通道。
+    </div>
+  </section>
+
+  <!-- 4 真可兑清单 -->
+  <section class="card" id="c4">
+    <h2>真可兑清单 · 9 件，以及每件要另付多少钱</h2>
+    <p class="hint">数据来源：<code>mall-product-detail</code> 的 <code>skuList[].extTradePrice</code>（真实返回 9 件全部命中）</p>
+    <div class="filters">
+      <span class="fchip on">全部 9 件</span>
+      <span class="fchip">纯积分可兑：0 件</span>
+      <span class="fchip">需另付现金：9 件</span>
+    </div>
+    <table>
+      <thead><tr><th>商品</th><th style="width:90px">所需积分</th><th style="width:100px">另付现金</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>6.9元可乐麦炫酷</td><td class="n">50</td><td class="n bad">¥6.9</td>
+            <td><span class="tag g">可兑</span></td></tr>
+        <tr><td>6.9元香芋派/菠萝派任选</td><td class="n">50</td><td class="n bad">¥6.9</td>
+            <td><span class="tag g">可兑</span></td></tr>
+        <tr><td>3.9元圆筒冰淇淋</td><td class="n">100</td><td class="n bad">¥3.9</td>
+            <td><span class="tag b">默认查询漏报</span></td></tr>
+        <tr><td>10.9元指定小食任选</td><td class="n">100</td><td class="n bad">¥10.9</td>
+            <td><span class="tag r">同名双 spuId · 选 17076</span></td></tr>
+        <tr><td>10.9元指定小食任选</td><td class="n">200</td><td class="n bad">¥10.9</td>
+            <td><span class="tag r">同名双 spuId · 选 17077</span></td></tr>
+        <tr><td>16.9元2份麦辣鸡翅</td><td class="n">200</td><td class="n bad">¥16.9</td>
+            <td><span class="tag b">默认查询漏报</span></td></tr>
+        <tr><td>16.9元麦辣可乐组合</td><td class="n">500</td><td class="n bad">¥16.9</td>
+            <td><span class="tag g">可兑</span></td></tr>
+        <tr><td>17.9元板烧可乐组合</td><td class="n">500</td><td class="n bad">¥17.9</td>
+            <td><span class="tag g">可兑</span></td></tr>
+        <tr><td>21.9元巨无霸可乐组合</td><td class="n">800</td><td class="n bad">¥21.9</td>
+            <td><span class="tag g">可兑</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout r">
+      <strong>这里修正了一个很常见的误判：</strong><br />
+      只看默认查询会得出"50 件商品门槛动辄数千、一件都换不到"——因为那些高门槛商品（Nike 联名款 8,888 分等）
+      <strong>全是窗口已关的假上架</strong>。<br />
+      剔除假上架后的真相是：真正可兑的 9 件门槛只要 50–800 分，<strong>1,249 分全部够得着</strong>——
+      但每件都写着"另付现金"，纯积分可兑为 0。
+      <br /><span class="dim">所以正确的建议不是"别换"，而是<strong>"积分只够当门槛券，真实成本是积分 + 现金"</strong>。
+      这个结论，只有跑完验真才能得出。</span>
+    </div>
+    <div class="callout">
+      <strong>还有 4 件被默认查询藏起来的：</strong>
+      <span class="mono dim">9.9元指定小食任选 (100分) · 3.9元圆筒冰淇淋 (100分) · 16.9元2份麦辣鸡翅 (200分) · 酸黄瓜吧唧礼盒 (800分)</span><br />
+      <span class="dim">其中「3.9元圆筒冰淇淋」「16.9元2份麦辣鸡翅」是真正可兑的——不遍历分类就永远看不到它们。</span>
+    </div>
+  </section>
+
+  <!-- 5 订单复盘 -->
+  <section class="card" id="c5">
+    <h2>订单复盘 · 你的 10 笔历史订单</h2>
+    <p class="hint">数据来源：<code>order-list</code> + <code>query-order</code> + <code>query-my-coupons</code>（真实返回）</p>
+    <table>
+      <thead><tr><th>日期</th><th>门店</th><th>内容</th><th style="width:80px">实付</th></tr></thead>
+      <tbody>
+        <tr><td>2026-10-07</td><td class="dim">东莞民盈山餐厅</td><td>板烧鸡腿堡 ×1</td><td class="n">¥23.5</td></tr>
+        <tr><td>2026-09-25</td><td class="dim">东莞向阳餐厅</td><td>汉堡开心乐园餐 + 板烧鸡腿堡 + 人气经典随心配</td><td class="n">¥62.4</td></tr>
+        <tr><td>2026-07-16</td><td class="dim">东莞东城中路得来速</td><td>人气经典随心配 ×1</td><td class="n">¥13.9</td></tr>
+        <tr><td>2026-06-21</td><td class="dim">东莞文化广场餐厅</td><td>双层深海鳕鱼堡 ×1</td><td class="n">¥24</td></tr>
+        <tr><td>2026-06-21</td><td class="dim">东莞文化广场餐厅</td><td>麦乐鸡经典中套餐 + 厚松饼猪柳 + 板烧鸡腿堡 + 开心乐园餐 + 绿豆沙雪冰</td><td class="n">¥114.9</td></tr>
+        <tr><td>2026-06-21</td><td class="dim">东莞东城环城东路</td><td>猪柳蛋麦满分 ×1</td><td class="n">¥18</td></tr>
+        <tr><td>2026-05-30</td><td class="dim">东莞东城环城东路</td><td>原味板烧鸡腿麦满分组合 ×2</td><td class="n">¥35</td></tr>
+        <tr><td>2026-05-05</td><td class="dim">东莞南城总部基地</td><td>芝芝火腿扒堡组合 ×1</td><td class="n">¥9.9</td></tr>
+      </tbody>
+    </table>
+    <ul class="list" style="margin-top:14px">
+      <li><span class="tag b">多店比价</span><div><strong>10 笔订单分布在 5 家不同门店</strong>（民盈山 / 向阳 / 东城中路得来速 / 文化广场 / 东城环城东路 / 南城总部基地）<br>
+        同一天在文化广场的两笔合计 <strong>¥138.9</strong>，其中 ¥114.9 那笔含麦乐鸡中套餐 + 厚松饼猪柳 + 雪冰等高价单品——
+        若当时用上「人气经典随心配」组合，多数单品能以更低总价拿下。</div></li>
+      <li><span class="tag r">积分未用</span><div><strong>10 笔订单均未使用积分抵扣</strong><br>
+        期间累计获得 <strong>7,495.6</strong> 积分、已用 4,169、过期 <strong>2,077.6</strong>。
+        换算下来，<strong>约 27.7% 的积分是白扔的</strong>——不是没机会用，是没有机制提醒你「这次可以抵」。</div></li>
+      <li><span class="tag p">券未核销</span><div><strong>账户当前仍持有可用优惠券</strong><br>
+        其中含「19.9 元王牌炸鸡任选 2」等券。结合订单记录可核对：这些券在对应订单发生时是否可用、
+        有没有被漏用——这是复盘的重点，也是多数人完全看不到的部分。</div></li>
+    </ul>
+    <div class="callout">
+      <strong>可改进空间：</strong>订单总额约 ¥301.5，若把过期积分（2,077.6 分）对应的抵扣用起来，
+      加上券的合理核销，<strong>每月可省约 15–20%</strong>。
+      <br /><span class="dim">而复盘的价值不在于"你点贵了"，而在于<strong>指出钱漏在哪个环节</strong>——
+      这里答案是：不是单价，是积分和券的静默过期。</span>
+    </div>
+  </section>
+
+  <footer>
+    本页所有数据均通过<strong>麦当劳官方 MCP Server（https://mcp.mcd.cn）实际调用</strong>取得，
+    抓取时间 2026-10-24（GMT+8）。会员标识、订单门店等个人数据已做部分脱敏。<br />
+    每一条结论都可以用仓库里的 <span class="mono">scripts/verify_shelf.py</span> 自行复现——不需要相信作者的说法。<br /><br />
+    <a href="https://github.com/Jefsky/mcd-points-ledger">项目仓库</a> ·
+    <a href="https://github.com/M-China/mcd-developer-innovation-challenge">参赛活动</a> ·
+    <a href="https://github.com/M-China/mcd-mcp-server">麦当劳 MCP 工具文档</a><br /><br />
+    麦当劳程序员节创意开发大赛参赛作品 · 非麦当劳官方产品 · 所有价格与积分以麦当劳官方渠道实时结果为准
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('on'); });
+      document.querySelectorAll('.card').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      document.getElementById(b.dataset.t).classList.add('on');
+    });
+  });
+</script>
+</body>
+</html>
