@@ -6,7 +6,15 @@
 
 基于麦当劳中国官方 MCP Server 的积分货架验真与净值核算 Skill
 
-[先看效果](#先看效果) · [四道验真](#四道验真) · [五条工作流](#五条工作流) · [MCP 工具](#使用的-mcp-工具) · [安装](#安装) · [参赛信息](#参赛信息)
+[在线体验](https://jefsky.github.io/mcd-points-ledger/) · [先看效果](#先看效果) · [四道验真](#四道验真) · [五条工作流](#五条工作流) · [MCP 工具](#使用的-mcp-工具) · [安装](#安装) · [参赛信息](#参赛信息)
+
+<p align="center">
+  <a href="https://github.com/Jefsky/mcd-points-ledger"><b>⭐ 喜欢的话，点颗 Star</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://jefsky.github.io/mcd-points-ledger/">在线体验</a>
+  &nbsp;·&nbsp;
+  <a href="#欢迎来坐坐">欢迎来坐坐</a>
+</p>
 
 </div>
 
@@ -197,6 +205,8 @@ python scripts/verify_shelf.py
 
 脚本只依赖 Python 标准库，输出与本文档完全一致：
 
+> **不想装环境？** 直接看[在线演示页](https://jefsky.github.io/mcd-points-ledger/) —— 免 Token，浏览器打开即用。
+
 ```
 【1】漏报校正 —— 默认查询 vs 带 catRuleIds 全量查询
   默认查询返回      :  50 件（其中 point>0 的 23 件）
@@ -348,6 +358,36 @@ mcd-points-ledger/
 - **下单前二次确认** — 积分兑换不可逆，务必复述并等待明确同意
 - **抽奖先验活动状态** — 用 `now-time-info` 校验时间窗，不凭感觉推断
 - **数字可复现** — 每个结论都有脚本能跑出来
+
+---
+
+## 欢迎来坐坐
+
+这个项目最有价值的部分不是代码，是**那些不太显而易见的接口行为**。如果你也踩过坑，欢迎补充。
+
+**我想请你帮个忙**
+
+如果你用麦当劳积分商城的 MCP 数据做过事，大概率遇到过下面这些情况之一：
+
+- 查出来的商品不少，但用户说"兑换不了" → 多半是 `status=2` 但窗口已关
+- 用户说"还要另外付钱" → 多半是 `extTradePrice`，列表接口不给
+- 同样的商品查出来两遍 → 多半是没遍历 `catRuleIds`
+- 算出来的余额是 0 → 多半是接口返回的是字符串
+
+**这些我都写进 `scripts/verify_shelf.py` 了，直接拿去用：**
+
+```bash
+git clone https://github.com/Jefsky/mcd-points-ledger
+cd mcd-points-ledger
+export MCD_MCP_TOKEN=你的Token
+python scripts/verify_shelf.py
+```
+
+**如果它帮到了你**，欢迎点个 ⭐ Star —— 这对我真的很重要。
+
+**如果发现了它没覆盖的情况**，请开一个 Issue 告诉我，我会去实测后补进去。这个项目最大的动力就是"有人发现新坑，我把它验真后加进去"。
+
+**如果你在做类似的项目**，欢迎来聊。我扫过活动页全部 1052 个报名仓库的工具覆盖度数据（方法论在 `docs/coverage-analysis.md`），如果你想知道某个工具方向有没有人做过、或者想知道自己项目在做什么方向，可以直接问我，我能给你一份现成的统计。
 
 ---
 
