@@ -209,12 +209,35 @@ CAT_RULE_IDS = ['1>4','2','2>8','2>9','1>6>20','1>6>21','1>6>22','1>6>25','1>6>3
 
 ```bash
 export MCD_MCP_TOKEN=你的Token
-python scripts/verify_shelf.py
+python scripts/verify_shelf.py        # 货架验真：漏报/假上架/现金成本/同名 spuId
+python scripts/verify_shadow_price.py # 影子价格对池子口径的敏感度
 ```
 
-脚本只依赖 Python 标准库，输出与本文档完全一致：
+两个脚本都只依赖 Python 标准库，输出与本文档完全一致：
 
 > **不想装环境？** 直接看[在线演示页](https://jefsky.github.io/mcd-points-ledger/) —— 免 Token，浏览器打开即用。
+
+---
+
+## 💡 一个可能有用的发现：影子价格对池子口径极度敏感
+
+很多做积分价值计算的项目会算出一个「每积分值多少钱」的数字。这个数字**取决于你把哪些商品算进兑换池**，而这中间藏着一个很隐蔽的分歧：
+
+`mall-points-products` 返回的商品里，`status=2`（上架）但 `downTime` 已过期的占多数。**信不信 `status`，结果差 172%。**
+
+我用同一批真实数据（2026-10-25）实测：
+
+| 口径 | 池子 | 最优效率 | 价值极差 |
+|---|---:|---:|---:|
+| 信任 `status`（status=2 即认为可兑） | 27 件 | **0.3760 元/积分** | 13.7 倍 |
+| 额外要求 `downTime` 未过期 | 9 件 | **0.1380 元/积分** | 5.0 倍 |
+
+**这不是"哪个口径对"，而是"这个数字取决于什么"。**
+
+用它判断「花 500 积分省 24 元到底划不划算」时，无论你选哪个口径，都必须先说清池子是怎么划的 —— 否则结论会系统性偏移 1.7 倍。
+
+`scripts/verify_shadow_price.py` 就是把这件事变成一段任何人都能重跑的检查。
+
 
 ---
 
@@ -377,7 +400,8 @@ mcd-points-ledger/
 ├── demo/
 │   └── index.html                   # 离线演示页（免 Token，浏览器直接打开）
 ├── scripts/
-│   └── verify_shelf.py              # 货架验真器（可复现本项目全部核心数字）
+│   ├── verify_shelf.py              # 货架验真器（可复现本项目全部核心数字）
+│   └── verify_shadow_price.py       # 影子价格口径敏感度验证
 ├── docs/
 │   └── coverage-analysis.md         # 全量参赛项目覆盖度分析
 └── skills/
