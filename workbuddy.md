@@ -382,7 +382,7 @@ Token 申请与接入步骤：
 
 ### 重定位的核心决策
 
-原名 `mcd-points-steward` 与竞品 `mc-points-steward` 几乎相同，desc 也撞。新名 **`mcd-points-ledger`**（麦麦积分真账本），一句话定位：
+原名 `mcd-points-steward` 与同期项目 `mc-points-steward` 几乎相同，desc 也撞。新名 **`mcd-points-ledger`**（麦麦积分真账本），一句话定位：
 
 > **它标称有多少，你算的是还剩多少、能不能真换到。**
 
@@ -450,7 +450,7 @@ ledger mall mcd mcd-mcp rewards verified points-audit
 |---|---|
 | `scripts/verify_shelf.py` | 货架验真器，五段输出，可复现全部核心数字 |
 | `PROMO.md` | 推广计划 + 小红书/掘金/朋友圈三版文案 + GitHub 互推模板 |
-| `docs/coverage-analysis.md` | 全量参赛项目覆盖度分析（含方法论与竞品对照） |
+| `docs/coverage-analysis.md` | 全量参赛项目覆盖度分析（含方法论与同期项目对照） |
 | `demo/index.html` | 升级为 5 Tab，新增货架验真漏斗视图 |
 
 ---
@@ -538,9 +538,9 @@ gh api repos/M-China/mcd-developer-innovation-challenge/contents/RANKING.md \
 
 ### 我再次修正了自己的结论
 
-**「过期未下架检测 0 覆盖」是错的** —— 实际是 10/878，而且直接竞品 `yurenpai/mc-points-steward` 也命中了。
+**「过期未下架检测 0 覆盖」是错的** —— 实际是 10/878，而且同期项目 `yurenpai/mc-points-steward` 也命中了。
 
-对照竞品的 7 个维度，**竞品覆盖 5 个**，我独有的只有「可抽次数计算」和「净值核算」。
+对照该项目的 7 个维度，**它覆盖 5 个**，我独有的只有「可抽次数计算」和「净值核算」。
 
 所以我把 README 的差异化论述整个改了：
 
@@ -548,8 +548,8 @@ gh api repos/M-China/mcd-developer-innovation-challenge/contents/RANKING.md \
 - 改成「**我把这三个坑做成了一个任何人都能跑的验真流程**」
 - 在 `docs/coverage-analysis.md` 里公开方法论、原始统计口径，**以及我自己的两次方法论错误**
 
-这是第三次修正同一个位置了。前两次是因为样本不全，这次是因为一开始就没把竞品放进样本。
-**教训固化下来：差异化论证的分母必须包含所有竞争者，且在写进文档前先用竞品自己的文档跑一遍对照。**
+这是第三次修正同一个位置了。前两次是因为样本不全，这次是因为一开始就没把那个项目放进样本。
+**教训固化下来：差异化论证的分母必须包含所有竞争者，且在写进文档前先用对方自己的文档跑一遍对照。**
 
 ### 本轮还补齐了引流基建
 
