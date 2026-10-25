@@ -67,23 +67,23 @@
 <body>
 <div class="wrap">
   <header>
-    <span class="badge">真实 MCP 数据 · 2026-10-24 抓取 · 可复现</span>
+    <span class="badge">真实 MCP 数据 · 2026-10-25 抓取 · 可复现</span>
     <h1>麦麦积分真账本</h1>
     <p class="lead">
-      <strong>它说有多少，你算的是还剩多少、能不能真换到。</strong><br />
+      <strong>它标称有多少，你算的是还剩多少、能不能真换到。</strong><br />
       以下全部为<strong>通过麦当劳官方 MCP 实际调用</strong>取得的数据。任何数字都能用
       <span class="mono">scripts/verify_shelf.py</span> 自行复现。
     </p>
   </header>
 
   <div class="hero">
-    <h2>官方说「有 50 件可兑换」，实际真正能换到的只有 9 件</h2>
+    <h2>接口返回「有 50 件可兑换」，实际真正能换到的只有 9 件</h2>
     <p>而且这 9 件，<strong>每一件都要另外掏现金</strong>。纯积分可兑商品：<strong>0 件</strong>。</p>
     <div class="chain">
       <span class="dim">接口报告</span><b>50</b>
       <span class="dim">→ 全量去重</span><b>54</b>
       <span class="dim">→ 积分结算项</span><b>27</b>
-      <span class="dim">→ 假上架</span><b class="bad">−18</b>
+      <span class="dim">→ 过期未下架</span><b class="bad">−18</b>
       <span class="dim">→ 真正可兑</span><b class="warn">9</b>
       <span class="dim">→ 纯积分可兑</span><b class="bad">0</b>
     </div>
@@ -99,13 +99,13 @@
 
   <!-- 1 货架验真 -->
   <section class="card on" id="c1">
-    <h2>货架验真 · 四道检测，官方口径全部失真</h2>
+    <h2>货架验真 · 四道检测，接口标称口径全部失真</h2>
     <p class="hint">数据来源：<code>mall-points-products</code>（默认 + 带 <code>catRuleIds</code> 全量）、<code>mall-product-detail</code>（真实返回）</p>
 
     <div class="kpi">
       <div><b>54</b><span>全量在架（去重）</span></div>
       <div><b class="warn">4</b><span>默认查询漏报</span></div>
-      <div><b class="bad">18</b><span>假上架（66%）</span></div>
+      <div><b class="bad">18</b><span>过期未下架（66%）</span></div>
       <div><b class="warn">9</b><span>真正可兑</span></div>
       <div><b class="bad">9/9</b><span>需另付现金</span></div>
     </div>
@@ -118,7 +118,7 @@
     </div>
 
     <div class="callout r">
-      <strong>检测二 · 假上架检测：</strong>27 件标着 <code>status=2</code>（上架）的积分商品里，
+      <strong>检测二 · 过期未下架检测：</strong>27 件标着 <code>status=2</code>（上架）的积分商品里，
       <strong>18 件的兑换窗口早已关闭（66%）</strong>——但接口的 <code>status</code> 字段仍在说"上架"。<br />
       <span class="mono dim">例：Nike Book 2 麦当劳特别联名款 (8888分) 窗口 2026-06-05 14:00~16:00 ｜ 罗技键鼠套装 (6666分) 窗口 2026-08-21 14:00~23:59</span><br />
       <span class="dim">只看 <code>status</code> 字段，排行榜上那些高门槛商品全是幻觉。</span>
@@ -137,7 +137,7 @@
     </div>
 
     <div class="callout g">
-      <strong>验真的意义：</strong>官方口径的 50 件里，实际能真正兑换的是 9 件（<strong>缩水 82%</strong>），
+      <strong>验真的意义：</strong>接口标称的 50 件中，实际能真正兑换的是 9 件（<strong>缩水 82%</strong>），
       而这 9 件全部需要另付现金。<strong>只信 <code>status</code> 字段的导购，会把你带向一个不存在的货架。</strong>
     </div>
   </section>
@@ -147,14 +147,14 @@
     <h2>积分净值 · 你的积分账户全貌</h2>
     <p class="hint">数据来源：<code>query-my-account</code>（真实返回，<code>accountId=2F2925CF-…</code>）</p>
     <div class="kpi">
-      <div><b class="ok">1,249</b><span>可用积分</span></div>
-      <div><b>7,495.6</b><span>累计积分</span></div>
+      <div><b class="ok">1,331.3</b><span>可用积分</span></div>
+      <div><b>7,577.9</b><span>累计积分</span></div>
       <div><b>4,169</b><span>已使用</span></div>
       <div><b class="bad">2,077.6</b><span>已过期（沉没）</span></div>
       <div><b>0</b><span>本月将过期</span></div>
     </div>
     <div class="callout r">
-      <strong>2,077.6 分已经过期了，占累计积分的 <strong>27.7%</strong>。</strong><br />
+      <strong>2,077.6 分已经过期了，占累计积分的 <strong>27.4%</strong>。</strong><br />
       每 4 枚积分里就有 1 枚是白扔的——它没换来任何东西，只是安静地归零了。
       <br /><span class="dim">这正是这个 Skill 存在的理由：积分不是"攒着就好的数字"，它有<strong>有效期</strong>，
       有<strong>兑换比</strong>，也有<strong>机会成本</strong>。放着不动是最差的一种策略。</span>
@@ -162,7 +162,7 @@
     <table>
       <thead><tr><th>指标</th><th style="width:130px">占比</th><th>说明</th></tr></thead>
       <tbody>
-        <tr><td>可用积分</td><td class="n">1,249</td>
+        <tr><td>可用积分</td><td class="n">1,331.3</td>
             <td><div class="bar"><i style="width:17%"></i></div> <span class="dim">当前可花掉的</span></td></tr>
         <tr><td>已使用</td><td class="n">4,169</td>
             <td><div class="bar"><i style="width:56%"></i></div> <span class="dim">换过东西，不算亏</span></td></tr>
@@ -172,7 +172,7 @@
       </tbody>
     </table>
     <div class="callout">
-      <strong>可达净值：</strong>真正可兑商品的最低门槛是 <strong>50 分</strong>，你的 1,249 分完全够得着；
+      <strong>可达净值：</strong>真正可兑商品的最低门槛是 <strong>50 分</strong>，你的 1,331.3 分完全够得着；
       但 9 件全部需另付现金、纯积分可兑为 0，
       所以<strong>积分在这里是"门槛券"而不是"支付手段"</strong>——真正能把积分花掉的地方是抽奖。
     </div>
@@ -201,7 +201,7 @@
     </div>
     <div class="callout g">
       <strong>建议：优先抽。</strong>单次成本仅 24 分，是全场门槛最低的积分出口。<br />
-      你的 1,249 分理论上可抽 <strong>52 次</strong>；抽完还剩 1 分，
+      你的 1,331.3 分理论上可抽 <strong>55 次</strong>；抽完还剩 11 分，
       但奖品池里有「积分霸王餐」和「10/12/28 会员积分」——<strong>积分奖意味着积分可以回流</strong>，
       长期看接近无损。
       <br /><span class="dim">接口还返回了 <code>drawDecision.resourceEligible=true</code>（你符合参与条件）、
@@ -249,8 +249,8 @@
     <div class="callout r">
       <strong>这里修正了一个很常见的误判：</strong><br />
       只看默认查询会得出"50 件商品门槛动辄数千、一件都换不到"——因为那些高门槛商品（Nike 联名款 8,888 分等）
-      <strong>全是窗口已关的假上架</strong>。<br />
-      剔除假上架后的真相是：真正可兑的 9 件门槛只要 50–800 分，<strong>1,249 分全部够得着</strong>——
+      <strong>全是窗口已关的过期未下架</strong>。<br />
+      剔除过期未下架后的真相是：真正可兑的 9 件门槛只要 50–800 分，<strong>1,331.3 分全部够得着</strong>——
       但每件都写着"另付现金"，纯积分可兑为 0。
       <br /><span class="dim">所以正确的建议不是"别换"，而是<strong>"积分只够当门槛券，真实成本是积分 + 现金"</strong>。
       这个结论，只有跑完验真才能得出。</span>
@@ -269,6 +269,7 @@
     <table>
       <thead><tr><th>日期</th><th>门店</th><th>内容</th><th style="width:80px">实付</th></tr></thead>
       <tbody>
+        <tr><td>2026-10-24</td><td class="dim">东城环城东路(碧桂园)</td><td>龙焰鸡腿堡两件套 + 培根安格斯厚牛堡四件套 + 麦辣鸡翅2块</td><td class="n">¥82.38</td></tr>
         <tr><td>2026-10-07</td><td class="dim">东莞民盈山餐厅</td><td>板烧鸡腿堡 ×1</td><td class="n">¥23.5</td></tr>
         <tr><td>2026-09-25</td><td class="dim">东莞向阳餐厅</td><td>汉堡开心乐园餐 + 板烧鸡腿堡 + 人气经典随心配</td><td class="n">¥62.4</td></tr>
         <tr><td>2026-07-16</td><td class="dim">东莞东城中路得来速</td><td>人气经典随心配 ×1</td><td class="n">¥13.9</td></tr>
@@ -277,21 +278,23 @@
         <tr><td>2026-06-21</td><td class="dim">东莞东城环城东路</td><td>猪柳蛋麦满分 ×1</td><td class="n">¥18</td></tr>
         <tr><td>2026-05-30</td><td class="dim">东莞东城环城东路</td><td>原味板烧鸡腿麦满分组合 ×2</td><td class="n">¥35</td></tr>
         <tr><td>2026-05-05</td><td class="dim">东莞南城总部基地</td><td>芝芝火腿扒堡组合 ×1</td><td class="n">¥9.9</td></tr>
+        <tr><td>2026-04-17</td><td class="dim">东城环城东路(碧桂园)</td><td>麦辣鸡腿汉堡 ×1</td><td class="n">¥11.9</td></tr>
       </tbody>
     </table>
     <ul class="list" style="margin-top:14px">
-      <li><span class="tag b">多店比价</span><div><strong>10 笔订单分布在 5 家不同门店</strong>（民盈山 / 向阳 / 东城中路得来速 / 文化广场 / 东城环城东路 / 南城总部基地）<br>
+      <li><span class="tag b">多店比价</span><div><strong>10 笔订单分布在 6 家不同门店</strong>（民盈山 / 向阳 / 东城中路得来速 / 文化广场 / 东城环城东路 / 南城总部基地）<br>
+        其中 4 笔落在同一家「东城环城东路」——合计 <strong>¥147.38</strong>，客单价明显高于其他门店。<br>
         同一天在文化广场的两笔合计 <strong>¥138.9</strong>，其中 ¥114.9 那笔含麦乐鸡中套餐 + 厚松饼猪柳 + 雪冰等高价单品——
         若当时用上「人气经典随心配」组合，多数单品能以更低总价拿下。</div></li>
       <li><span class="tag r">积分未用</span><div><strong>10 笔订单均未使用积分抵扣</strong><br>
-        期间累计获得 <strong>7,495.6</strong> 积分、已用 4,169、过期 <strong>2,077.6</strong>。
-        换算下来，<strong>约 27.7% 的积分是白扔的</strong>——不是没机会用，是没有机制提醒你「这次可以抵」。</div></li>
+        期间累计获得 <strong>7,577.9</strong> 积分、已用 4,169、过期 <strong>2,077.6</strong>。
+        换算下来，<strong>约 27.4% 的积分是白扔的</strong>——不是没机会用，是没有机制提醒你「这次可以抵」。</div></li>
       <li><span class="tag p">券未核销</span><div><strong>账户当前仍持有可用优惠券</strong><br>
         其中含「19.9 元王牌炸鸡任选 2」等券。结合订单记录可核对：这些券在对应订单发生时是否可用、
         有没有被漏用——这是复盘的重点，也是多数人完全看不到的部分。</div></li>
     </ul>
     <div class="callout">
-      <strong>可改进空间：</strong>订单总额约 ¥301.5，若把过期积分（2,077.6 分）对应的抵扣用起来，
+      <strong>可改进空间：</strong>订单总额约 ¥395.9，若把过期积分（2,077.6 分）对应的抵扣用起来，
       加上券的合理核销，<strong>每月可省约 15–20%</strong>。
       <br /><span class="dim">而复盘的价值不在于"你点贵了"，而在于<strong>指出钱漏在哪个环节</strong>——
       这里答案是：不是单价，是积分和券的静默过期。</span>
@@ -300,7 +303,7 @@
 
   <footer>
     本页所有数据均通过<strong>麦当劳官方 MCP Server（https://mcp.mcd.cn）实际调用</strong>取得，
-    抓取时间 2026-10-24（GMT+8）。会员标识、订单门店等个人数据已做部分脱敏。<br />
+    抓取时间 2026-10-25（GMT+8）。会员标识、订单门店等个人数据已做部分脱敏。<br />
     每一条结论都可以用仓库里的 <span class="mono">scripts/verify_shelf.py</span> 自行复现——不需要相信作者的说法。<br /><br />
     <a href="https://github.com/Jefsky/mcd-points-ledger">项目仓库</a> ·
     <a href="https://github.com/M-China/mcd-developer-innovation-challenge">参赛活动</a> ·

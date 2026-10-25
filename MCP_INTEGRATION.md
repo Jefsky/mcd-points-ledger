@@ -15,7 +15,7 @@
 
 本 Skill 依赖以下 **12** 个麦当劳 MCP 工具，覆盖积分、商城、抽奖、订单、券、时间六个能力域。
 
-> 下表描述与参数均取自 `tools/list` 的**实际返回**（2026-10-24 抓取，服务器版本 `mcd-mcp 1.0.0`，工具总数 **35**），非转述文档。
+> 下表描述与参数均取自 `tools/list` 的**实际返回**（2026-10-25 抓取，服务器版本 `mcd-mcp 1.0.0`，工具总数 **35**），非转述文档。
 
 | # | 工具名 | 官方说明 | 入参 | 在本项目中的用途 |
 |---|--------|----------|------|------------------|
@@ -119,10 +119,10 @@ query-my-coupons         → 当时持有的券
 
 | 工具 | 调用结果 |
 |------|----------|
-| `query-my-account` | ✅ `availablePoint=1249`、`accumulativePoint=7495.6`、`usedPoint=4169`、`expiredPoint=2077.6`、`frozenPoint=0`、`currentMouthExpirePoint=0`、`currency=麦享会积分` |
+| `query-my-account` | ✅ `availablePoint=1331.3`、`accumulativePoint=7577.9`、`usedPoint=4169`、`expiredPoint=2077.6`、`frozenPoint=0`、`currentMouthExpirePoint=0`、`currency=麦享会积分` |
 | `now-time-info` | ✅ `datetime=2026-10-24T17:19:11`、`timezone=GMT+08:00` |
 | `mall-points-products` | ✅ 返回 **50** 件在架商品，含 `spuName` / `point` / `selling` / `upTime` / `downTime` / `catName` / `status` / `price` |
-| `query-lottery-info` | ✅ 活动「周六麦金喜抽奖」`activityStatusText=进行中`、`drawPoint=24`、`availablePoint=1249`、`drawDecision.resourceEligible=true`、奖品池含积分奖 |
+| `query-lottery-info` | ✅ 活动「周六麦金喜抽奖」`activityStatusText=进行中`、`drawPoint=24`、`availablePoint=1331.3`、`drawDecision.resourceEligible=true`、奖品池含积分奖 |
 | `query-my-coupons` | ✅ 返回卡包优惠券（如「19.9 元王牌炸鸡任选 2」） |
 | `order-list` | ✅ 返回 **10** 笔历史订单，含 `storeName` / `realTotalAmount` / `orderProductList` |
 | `mall-order-list` | ✅ 返回积分商城订单记录 |
@@ -133,9 +133,9 @@ query-my-coupons         → 当时持有的券
 
 **1. `point=0` 不等于免费。** 商城 50 件商品中大量条目 `point=0`，但其 `price=0` 表示**非积分结算项**（品鉴会、生日派对、读书会等需另付现金的活动权益）。若把 `point=0` 当成"0 分可换"，会给出完全错误的导购结论。
 
-**2. 余额不足时，正确答案是「别换」。** 实测用户可用 1,249 分，而真实积分商品的门槛在数千至数万级（如 Nike Book 2 联名款 8,888 分）——当前余额一件都换不到。此时 Skill 必须如实说明缺口并给出替代出口（24 分/次的小门槛抽奖），而不是硬凑一个买不起的方案。
+**2. 余额不足时，正确答案是「别换」。** 实测用户可用 1,331.3 分，而真实积分商品的门槛在数千至数万级（如 Nike Book 2 联名款 8,888 分）——当前余额一件都换不到。此时 Skill 必须如实说明缺口并给出替代出口（24 分/次的小门槛抽奖），而不是硬凑一个买不起的方案。
 
-**3. 钱漏在"静默过期"，不在"单价高"。** 实测账户累计 7,495.6 积分中 **2,077.6 分（27.7%）已过期**，而 10 笔历史订单单价全部正常。复盘的价值因此不在"你点贵了"，而在指出这个更隐蔽、金额更大的漏点。
+**3. 钱漏在"静默过期"，不在"单价高"。** 实测账户累计 7,577.9 积分中 **2,077.6 分（27.4%）已过期**，而 10 笔历史订单单价全部正常。复盘的价值因此不在"你点贵了"，而在指出这个更隐蔽、金额更大的漏点。
 
 ---
 

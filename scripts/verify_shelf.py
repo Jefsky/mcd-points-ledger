@@ -7,7 +7,7 @@
 对麦当劳积分商城做"去伪"核算，回答三个问题：
 
   1. 官方接口到底报了多少件商品？带 catRuleIds 全量查又是多少件？（漏报校正）
-  2. 标着"上架"的商品里，有多少件其实兑换窗口早已关闭？（假上架检测）
+  2. 标着"上架"的商品里，有多少件其实兑换窗口早已关闭？（过期未下架检测）
   3. 真正能兑换的，有几件还需要另付现金？（隐藏现金成本）
 
 用法
@@ -148,7 +148,7 @@ def parse_time(text):
 
 
 def is_fake_on_shelf(item, now):
-    """标着上架(status=2)，但兑换窗口 downTime 已过 → 假上架。"""
+    """标着上架(status=2)，但兑换窗口 downTime 已过 → 过期未下架。"""
     if item.get('status') != 2:
         return False
     end = parse_time(item.get('downTime'))
@@ -207,13 +207,13 @@ def audit(token):
     if not missed:
         print('     （本次查询未发现漏报）')
 
-    # --- 2. 假上架检测 -------------------------------------------------------
+    # --- 2. 过期未下架检测 -------------------------------------------------------
     on_shelf = [x for x in all_point if x.get('status') == 2]
     fake = [x for x in on_shelf if is_fake_on_shelf(x, now)]
     ratio = len(fake) * 100 // max(len(on_shelf), 1)
 
     print()
-    print('【2】假上架检测 —— status=2 但兑换窗口已关闭')
+    print('【2】过期未下架检测 —— status=2 但兑换窗口已关闭')
     print('  标为「上架」的积分商品 : %3d 件' % len(on_shelf))
     print('  其中兑换窗口已过期     : %3d 件  (%.0f%%)' % (len(fake), ratio))
     for item in fake:
@@ -221,7 +221,7 @@ def audit(token):
             item.get('spuName', '?')[:32], item.get('point'),
             (item.get('upTime') or '?')[:16], (item.get('downTime') or '?')[:16]))
     if not fake:
-        print('     （本次未发现假上架）')
+        print('     （本次未发现过期未下架）')
 
     # --- 3. 隐藏现金成本 -----------------------------------------------------
     truly = [x for x in on_shelf if not is_fake_on_shelf(x, now)]
@@ -281,13 +281,13 @@ def audit(token):
     print('  接口报告在架商品        : %d 件' % len(default_items))
     print('  全量在架(去重)          : %d 件' % len(merged))
     print('  其中积分结算项          : %d 件' % len(all_point))
-    print('  标为上架但窗口已关闭    : %d 件 (%.0f%%)  ← 假上架' % (len(fake), ratio))
+    print('  标为上架但窗口已关闭    : %d 件 (%.0f%%)  ← 过期未下架' % (len(fake), ratio))
     print('  真正可兑                : %d 件' % len(truly))
     print('  其中需另付现金          : %d 件  ← 隐藏现金成本' % len(pay_cash))
     print('  纯积分可兑              : %d 件' % len(pure))
     print('  积分可抽次数            : %s 次' % times)
     print()
-    print('  结论：官方接口报「有 N 件可兑」，实际能真正兑换的是 %d 件。' % len(truly))
+    print('  结论：接口标称「有 N 件可兑」，逐件核对后真正能兑换的是 %d 件。' % len(truly))
     print('=' * 68)
 
     return {
